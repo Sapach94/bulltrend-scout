@@ -17,5 +17,5 @@ jobs:
       - name: Run analysis
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.8480788421:AAHslBL99YVihLzv8XzsO_gxodOwmvAzKbg }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM }}
+          TELEGRAM_CHAT_ID: ${{ secrets.732005110 }}
         run: python run_daily.py
