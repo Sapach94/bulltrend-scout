@@ -5,11 +5,11 @@ import requests
 import numpy as np
 from datetime import datetime, timezone
 
-# 🔐 Récupère les secrets de GitHub
+# Récupère les secrets
 TELEGRAM_BOT_TOKEN = os.getenv("8480788421:AAHslBL99YVihLzv8XzsO_gxodOwmvAzKbg")
 TELEGRAM_CHAT_ID = os.getenv("732005110")
 
-# 🗺️ Mapping : Yahoo → MT5 + réglages
+# Configuration des actifs
 SYMBOL_CONFIG = {
     "GC=F": {"mt5": "XAUUSD", "dec": 2, "mult": 1, "tv": "TVC:GC1!"},
     "SI=F": {"mt5": "XAGUSD", "dec": 3, "mult": 10, "tv": "TVC:SI1!"},
@@ -27,10 +27,9 @@ def send_telegram(text):
         print("❌ TOKEN ou CHAT_ID manquant")
         return
     url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
-    requests.post(url, data={"chat_id": TELEGRAM_CHAT_ID, "text": text, "parse_mode": "HTML", "disable_web_page_preview": False})
+    requests.post(url, data={"chat_id": TELEGRAM_CHAT_ID, "text": text, "parse_mode": "HTML"})
 
 def find_recent_support_resistance(df, window=10):
-    """Trouve le support et la résistance récents (plus hauts/bas des N derniers jours)"""
     recent_high = df['High'][-window:].max()
     recent_low = df['Low'][-window:].min()
     return recent_low, recent_high
@@ -44,16 +43,12 @@ def calculate_sl_tp(df, symbol_info, trend="bullish"):
     dec = symbol_info["dec"]
 
     if trend == "bullish":
-        # SL : sous support ou -1.5x ATR
         sl = min(support, last_close - 1.5 * atr_adj)
-        # TP : vers résistance ou 2x risque
         tp1 = resistance
         tp2 = last_close + 2 * (last_close - sl)
         tp = max(tp1, tp2)
-    else:  # bearish
-        # SL : au-dessus résistance ou +1.5x ATR
+    else:
         sl = max(resistance, last_close + 1.5 * atr_adj)
-        # TP : vers support ou 2x risque
         tp1 = support
         tp2 = last_close - 2 * (sl - last_close)
         tp = min(tp1, tp2)
@@ -62,7 +57,6 @@ def calculate_sl_tp(df, symbol_info, trend="bullish"):
     tp = round(tp, dec)
     entry = round(last_close, dec)
 
-    # Validation
     if trend == "bullish" and (sl >= entry or tp <= entry):
         return None, None, None, None
     if trend == "bearish" and (sl <= entry or tp >= entry):
@@ -90,7 +84,7 @@ def analyze(symbol):
         config = SYMBOL_CONFIG[symbol]
         trades = []
 
-        # 🔺 Tendance haussière ?
+        # Tendance haussière
         bull_score = sum([
             last['Close'] > last['MA50'] > last['MA200'],
             last['MA20'] > last['MA50'],
@@ -115,7 +109,7 @@ def analyze(symbol):
                     "tv_link": f"https://www.tradingview.com/chart/?symbol={config['tv']}"
                 })
 
-        # 🔻 Tendance baissière ?
+        # Tendance baissière
         bear_score = sum([
             last['Close'] < last['MA50'] < last['MA200'],
             last['MA20'] < last['MA50'],
