@@ -6,8 +6,8 @@ import numpy as np
 from datetime import datetime, timezone
 
 # Récupère les secrets
-TELEGRAM_BOT_TOKEN = os.getenv("8480788421:AAHslBL99YVihLzv8XzsO_gxodOwmvAzKbg")
-TELEGRAM_CHAT_ID = os.getenv("732005110")
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
 # Configuration des actifs
 SYMBOL_CONFIG = {
