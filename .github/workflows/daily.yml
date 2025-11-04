@@ -1,8 +1,9 @@
-name: BullTrend Scout Daily
+name: AlphaTrend AI Daily
 on:
   schedule:
     - cron: '30 16 * * *'
   workflow_dispatch:
+
 jobs:
   run:
     runs-on: ubuntu-latest
@@ -13,9 +14,9 @@ jobs:
         with:
           python-version: '3.11'
       - name: Install dependencies
-        run: pip install yfinance pandas ta requests
+        run: pip install yfinance pandas ta requests numpy
       - name: Run analysis
         env:
-          TELEGRAM_BOT_TOKEN: ${{ secrets.8480788421:AAHslBL99YVihLzv8XzsO_gxodOwmvAzKbg }}
-          TELEGRAM_CHAT_ID: ${{ secrets.732005110 }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python run_daily.py
